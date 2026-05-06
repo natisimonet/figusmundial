@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Figus 2026">
+<title>Figus Mundial 2026 🏆</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+  :root {
+    --green: #3B6D11;
+    --green-mid: #639922;
+    --green-light: #97C459;
+    --green-bg: #EAF3DE;
+    --green-border: #C0DD97;
+    --amber: #854F0B;
+    --amber-mid: #BA7517;
+    --amber-light: #EF9F27;
+    --amber-bg: #FAEEDA;
+    --amber-border: #FAC775;
+    --red: #993C1D;
+    --gray-bg: #F4F4F0;
+    --gray-bg2: #EEEEE8;
+    --gray-border: rgba(0,0,0,0.12);
+    --gray-border2: rgba(0,0,0,0.2);
+    --text: #1a1a1a;
+    --text2: #555;
+    --text3: #999;
+    --white: #fff;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --green: #97C459;
+      --green-mid: #97C459;
+      --green-light: #C0DD97;
+      --green-bg: #173404;
+      --green-border: #3B6D11;
+      --amber: #FAC775;
+      --amber-mid: #EF9F27;
+      --amber-light: #FAC775;
+      --amber-bg: #412402;
+      --amber-border: #854F0B;
+      --red: #F09595;
+      --gray-bg: #1c1c1c;
+      --gray-bg2: #262626;
+      --gray-border: rgba(255,255,255,0.1);
+      --gray-border2: rgba(255,255,255,0.2);
+      --text: #f0f0f0;
+      --text2: #aaa;
+      --text3: #666;
+      --white: #1a1a1a;
+    }
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--gray-bg);color:var(--text);min-height:100vh}
+  button{cursor:pointer;font-family:inherit;border:none;background:none}
+  .tile{transition:transform 0.08s}
+  .tile:active{transform:scale(0.91)}
+  .row-btn:active{opacity:0.7}
+  #root{max-width:500px;margin:0 auto;min-height:100vh;background:var(--white)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script>
+const {useState,useEffect,useRef,useCallback,useMemo}=React;
+const h=React.createElement;
+
+// ── DATA ────────────────────────────────────────────────────────────────────
+const TEAMS=[
+  {code:"MEX",name:"México",flag:"🇲🇽"},{code:"RSA",name:"Sudáfrica",flag:"🇿🇦"},
+  {code:"KOR",name:"Corea del Sur",flag:"🇰🇷"},{code:"CZE",name:"Chequia",flag:"🇨🇿"},
+  {code:"CAN",name:"Canadá",flag:"🇨🇦"},{code:"BIH",name:"Bosnia-Herz.",flag:"🇧🇦"},
+  {code:"QAT",name:"Qatar",flag:"🇶🇦"},{code:"SUI",name:"Suiza",flag:"🇨🇭"},
+  {code:"BRA",name:"Brasil",flag:"🇧🇷"},{code:"MAR",name:"Marruecos",flag:"🇲🇦"},
+  {code:"HAI",name:"Haití",flag:"🇭🇹"},{code:"SCO",name:"Escocia",flag:"🏴󠁧󠁢󠁳󠁣󠁴󠁿"},
+  {code:"USA",name:"EE.UU.",flag:"🇺🇸"},{code:"PAR",name:"Paraguay",flag:"🇵🇾"},
+  {code:"AUS",name:"Australia",flag:"🇦🇺"},{code:"TUR",name:"Turquía",flag:"🇹🇷"},
+  {code:"GER",name:"Alemania",flag:"🇩🇪"},{code:"CUW",name:"Curazao",flag:"🇨🇼"},
+  {code:"CIV",name:"Costa de Marfil",flag:"🇨🇮"},{code:"ECU",name:"Ecuador",flag:"🇪🇨"},
+  {code:"NED",name:"Países Bajos",flag:"🇳🇱"},{code:"JPN",name:"Japón",flag:"🇯🇵"},
+  {code:"SWE",name:"Suecia",flag:"🇸🇪"},{code:"TUN",name:"Túnez",flag:"🇹🇳"},
+  {code:"BEL",name:"Bélgica",flag:"🇧🇪"},{code:"EGY",name:"Egipto",flag:"🇪🇬"},
+  {code:"IRN",name:"Irán",flag:"🇮🇷"},{code:"NZL",name:"Nueva Zelanda",flag:"🇳🇿"},
+  {code:"ESP",name:"España",flag:"🇪🇸"},{code:"CPV",name:"Cabo Verde",flag:"🇨🇻"},
+  {code:"KSA",name:"Arabia Saudita",flag:"🇸🇦"},{code:"URU",name:"Uruguay",flag:"🇺🇾"},
+  {code:"FRA",name:"Francia",flag:"🇫🇷"},{code:"SEN",name:"Senegal",flag:"🇸🇳"},
+  {code:"IRQ",name:"Irak",flag:"🇮🇶"},{code:"NOR",name:"Noruega",flag:"🇳🇴"},
+  {code:"ARG",name:"Argentina",flag:"🇦🇷"},{code:"ALG",name:"Argelia",flag:"🇩🇿"},
+  {code:"AUT",name:"Austria",flag:"🇦🇹"},{code:"JOR",name:"Jordania",flag:"🇯🇴"},
+  {code:"POR",name:"Portugal",flag:"🇵🇹"},{code:"COD",name:"R.D. Congo",flag:"🇨🇩"},
+  {code:"UZB",name:"Uzbekistán",flag:"🇺🇿"},{code:"COL",name:"Colombia",flag:"🇨🇴"},
+  {code:"ENG",name:"Inglaterra",flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿"},{code:"CRO",name:"Croacia",flag:"🇭🇷"},
+  {code:"GHA",name:"Ghana",flag:"🇬🇭"},{code:"PAN",name:"Panamá",flag:"🇵🇦"},
+];
+
+const FWC_INTRO=["00",...Array.from({length:8},(_,i)=>`FWC${i+1}`)];
+const FWC_FINAL=Array.from({length:11},(_,i)=>`FWC${i+9}`);
+const CC=Array.from({length:14},(_,i)=>`CC${i+1}`);
+
+const SECTIONS=[
+  {id:"fwc_intro",label:"FWC — Intro",flag:"🏆",stickers:FWC_INTRO},
+  ...TEAMS.map(t=>({id:t.code,label:t.name,flag:t.flag,
+    stickers:Array.from({length:20},(_,i)=>`${t.code}${i+1}`)})),
+  {id:"fwc_final",label:"FWC — Final",flag:"🏆",stickers:FWC_FINAL},
+  {id:"cc",label:"Coca-Cola Calcos",flag:"🥤",stickers:CC},
+];
+
+const GRAND_TOTAL=994;
+const STORAGE_KEY="figus-wc2026-v1";
+
+// ── STORAGE ──────────────────────────────────────────────────────────────────
+function loadCol(){try{const v=localStorage.getItem(STORAGE_KEY);return v?JSON.parse(v):{}}catch{return{}}}
+function saveCol(c){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(c))}catch{}}
+
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+function getStickerInfo(secId,code){
+  if(!TEAMS.find(t=>t.code===secId))return{};
+  const n=parseInt(code.replace(/[A-Z]+/,""));
+  if(n===1)return{icon:"🛡"};
+  if(n===13)return{icon:"📸"};
+  return{};
+}
+
+// ── STICKER TILE ─────────────────────────────────────────────────────────────
+function StickerTile({code,count,secId,onTap,onReset}){
+  const longRef=useRef(null);
+  const didLong=useRef(false);
+  const info=useMemo(()=>getStickerInfo(secId,code),[secId,code]);
+  const isHave=count>0,isRepeat=count>1;
+
+  const doReset=()=>{onReset(code);if(navigator.vibrate)navigator.vibrate(40);};
+  const ts=()=>{didLong.current=false;longRef.current=setTimeout(()=>{didLong.current=true;doReset();},600);};
+  const te=()=>clearTimeout(longRef.current);
+  const click=()=>{if(didLong.current){didLong.current=false;return;}onTap(code);};
+  const ctx=(e)=>{e.preventDefault();doReset();};
+
+  const bg=isRepeat?"var(--amber-bg)":isHave?"var(--green-bg)":"var(--gray-bg)";
+  const bc=isRepeat?"var(--amber-border)":isHave?"var(--green-border)":"var(--gray-border)";
+  const tc=isRepeat?"var(--amber)":isHave?"var(--green)":"var(--text3)";
+
+  return h("div",{
+    className:"tile",
+    onTouchStart:ts,onTouchEnd:te,onTouchMove:te,
+    onClick:click,onContextMenu:ctx,
+    style:{
+      aspectRatio:"1",borderRadius:"var(--radius)",
+      display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
+      cursor:"pointer",userSelect:"none",WebkitUserSelect:"none",
+      position:"relative",border:`1px solid ${bc}`,background:bg,
+      transition:"transform 0.08s",
+    }
+  },
+    isRepeat&&h("div",{style:{position:"absolute",top:2,right:3,fontSize:8,fontWeight:600,color:"var(--amber)"}},`×${count}`),
+    info.icon&&h("div",{style:{fontSize:11,lineHeight:1,marginBottom:1}},info.icon),
+    h("div",{style:{fontSize:8,fontWeight:600,letterSpacing:0.2,color:tc,textAlign:"center",lineHeight:1.2,padding:"0 2px"}},code),
+    isHave&&!isRepeat&&h("i",{className:"ti ti-check","aria-hidden":"true",style:{fontSize:12,color:"var(--green)",marginTop:1}})
+  );
+}
+
+// ── PROGRESS BAR ─────────────────────────────────────────────────────────────
+function ProgressBar({pct,done}){
+  return h("div",{style:{height:5,background:"var(--gray-bg2)",borderRadius:3,overflow:"hidden"}},
+    h("div",{style:{height:"100%",width:`${pct}%`,background:done?"var(--green)":"var(--green-light)",borderRadius:3,transition:"width 0.3s"}})
+  );
+}
+
+// ── SECTION VIEW ─────────────────────────────────────────────────────────────
+function SectionView({section,col,onTap,onReset,onBack}){
+  const [filter,setFilter]=useState("all");
+  const sHave=section.stickers.filter(s=>col[s]>0).length;
+  const sPct=Math.round((sHave/section.stickers.length)*100);
+  const shown=useMemo(()=>{
+    if(filter==="missing")return section.stickers.filter(s=>!(col[s]>0));
+    if(filter==="repeated")return section.stickers.filter(s=>col[s]>1);
+    return section.stickers;
+  },[section,col,filter]);
+
+  return h("div",{style:{minHeight:"100vh",paddingBottom:20}},
+    // Sticky header
+    h("div",{style:{
+      position:"sticky",top:0,zIndex:10,
+      background:"var(--white)",
+      borderBottom:"1px solid var(--gray-border)",
+      padding:"10px 12px 8px"
+    }},
+      h("div",{style:{display:"flex",alignItems:"center",gap:10,marginBottom:8}},
+        h("button",{onClick:onBack,className:"row-btn",style:{
+          border:"1px solid var(--gray-border2)",
+          borderRadius:"var(--radius)",padding:"5px 10px",
+          fontSize:13,color:"var(--text)",display:"flex",alignItems:"center",gap:4
+        }},
+          h("i",{className:"ti ti-arrow-left","aria-hidden":"true",style:{fontSize:14}}),"Volver"
+        ),
+        h("div",{style:{flex:1,overflow:"hidden",display:"flex",alignItems:"center",gap:6}},
+          h("span",{style:{fontSize:20}},section.flag),
+          h("span",{style:{fontWeight:600,fontSize:14,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",color:"var(--text)"}},section.label)
+        ),
+        h("div",{style:{fontSize:12,fontWeight:600,color:"var(--text2)",flexShrink:0}},
+          `${sHave}/${section.stickers.length} · ${sPct}%`
+        )
+      ),
+      h(ProgressBar,{pct:sPct,done:sPct===100}),
+      // Filter tabs
+      h("div",{style:{display:"flex",gap:6,marginTop:8}},
+        [["all","Todas"],["missing","Me faltan"],["repeated","Repetidas"]].map(([f,lbl])=>
+          h("button",{key:f,onClick:()=>setFilter(f),style:{
+            flex:1,padding:"6px 4px",fontSize:11,fontWeight:600,
+            background:filter===f?"var(--green-bg)":"var(--gray-bg)",
+            color:filter===f?"var(--green)":"var(--text2)",
+            border:filter===f?"1px solid var(--green-border)":"1px solid var(--gray-border)",
+            borderRadius:"var(--radius)",cursor:"pointer"
+          }},lbl)
+        )
+      )
+    ),
+    // Grid
+    h("div",{style:{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:6,padding:10}},
+      shown.length===0
+        ? h("div",{style:{gridColumn:"1/-1",textAlign:"center",padding:"40px 20px",color:"var(--text2)",fontSize:14}},
+            filter==="missing"?"¡Completaste esta sección! 🎉":"No hay repetidas aquí"
+          )
+        : shown.map(code=>h(StickerTile,{key:code,code,count:col[code]||0,secId:section.id,onTap,onReset}))
+    )
+  );
+}
+
+// ── REPEATED VIEW ─────────────────────────────────────────────────────────────
+function RepeatedView({col,onTap,onReset}){
+  const grouped=useMemo(()=>{
+    const g={};
+    SECTIONS.forEach(sec=>{
+      sec.stickers.forEach(code=>{
+        if((col[code]||0)>1){
+          if(!g[sec.id])g[sec.id]={section:sec,items:[]};
+          g[sec.id].items.push({code,count:col[code]});
+        }
+      });
+    });
+    return Object.values(g);
+  },[col]);
+
+  const totalExtras=grouped.reduce((s,{items})=>s+items.reduce((ss,{count})=>ss+(count-1),0),0);
+  const totalCodes=grouped.reduce((s,{items})=>s+items.length,0);
+
+  if(!grouped.length) return h("div",{style:{textAlign:"center",padding:"60px 20px",color:"var(--text2)"}},
+    h("i",{className:"ti ti-cards","aria-hidden":"true",style:{fontSize:44,display:"block",marginBottom:12,color:"var(--text3)"}}),
+    h("div",{style:{fontSize:16,fontWeight:600,marginBottom:6}},"Sin repetidas todavía"),
+    h("div",{style:{fontSize:13,color:"var(--text3)"}},"Marcá tus figus en el álbum para verlas acá")
+  );
+
+  return h("div",{style:{padding:10}},
+    h("div",{style:{
+      background:"var(--green-bg)",border:"1px solid var(--green-border)",
+      borderRadius:"var(--radius)",padding:"10px 14px",
+      marginBottom:12,display:"flex",justifyContent:"space-between",alignItems:"center"
+    }},
+      h("span",{style:{fontSize:13,color:"var(--green)",fontWeight:600}},
+        `${totalExtras} figurita${totalExtras!==1?"s":""} para cambiar`
+      ),
+      h("span",{style:{fontSize:12,color:"var(--green)"}},`${totalCodes} códigos distintos`)
+    ),
+    grouped.map(({section,items})=>
+      h("div",{key:section.id,style:{marginBottom:14}},
+        h("div",{style:{display:"flex",alignItems:"center",gap:6,marginBottom:6,padding:"0 2px"}},
+          h("span",{style:{fontSize:14}},section.flag),
+          h("span",{style:{fontSize:12,fontWeight:600,color:"var(--text2)"}},section.label)
+        ),
+        h("div",{style:{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:5}},
+          items.map(({code,count})=>h(StickerTile,{key:code,code,count,secId:section.id,onTap,onReset}))
+        )
+      )
+    )
+  );
+}
+
+// ── DATA MODAL ────────────────────────────────────────────────────────────────
+function DataModal({col,onClose,onImport}){
+  const [msg,setMsg]=useState("");
+  const fileRef=useRef();
+
+  const doExport=()=>{
+    const data=JSON.stringify(col,null,2);
+    const blob=new Blob([data],{type:"application/json"});
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download=`figus-mundial-2026-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+  };
+
+  const doImport=(e)=>{
+    const file=e.target.files[0];
+    if(!file)return;
+    const r=new FileReader();
+    r.onload=(ev)=>{
+      try{
+        const parsed=JSON.parse(ev.target.result);
+        if(typeof parsed==="object"&&parsed!==null){
+          onImport(parsed);
+          setMsg("✅ Datos importados correctamente");
+          setTimeout(onClose,1500);
+        }else{setMsg("❌ Archivo inválido");}
+      }catch{setMsg("❌ Error al leer el archivo");}
+    };
+    r.readAsText(file);
+  };
+
+  const doReset=()=>{
+    if(window.confirm("¿Seguro que querés borrar TODA tu colección? Esta acción no se puede deshacer.")){
+      onImport({});
+      setMsg("✅ Colección borrada");
+      setTimeout(onClose,1200);
+    }
+  };
+
+  return h("div",{
+    onClick:onClose,
+    style:{
+      position:"fixed",inset:0,background:"rgba(0,0,0,0.55)",
+      display:"flex",alignItems:"flex-end",justifyContent:"center",zIndex:100
+    }
+  },
+    h("div",{
+      onClick:e=>e.stopPropagation(),
+      style:{
+        background:"var(--white)",borderRadius:"16px 16px 0 0",
+        padding:"20px 20px 32px",width:"100%",maxWidth:500,
+        borderTop:"1px solid var(--gray-border)"
+      }
+    },
+      h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}},
+        h("span",{style:{fontSize:16,fontWeight:700,color:"var(--text)"}},"Datos de tu colección"),
+        h("button",{onClick:onClose,style:{fontSize:22,color:"var(--text2)",lineHeight:1}},h("i",{className:"ti ti-x","aria-hidden":"true"}))
+      ),
+      h("p",{style:{fontSize:12,color:"var(--text3)",marginBottom:16,lineHeight:1.5}},
+        "Los datos se guardan automáticamente en este navegador/dispositivo. Exportá para hacer backup o para pasar tus datos a otro dispositivo."
+      ),
+      // Export
+      h("button",{onClick:doExport,className:"row-btn",style:{
+        display:"flex",alignItems:"center",gap:10,width:"100%",
+        padding:"13px 14px",borderRadius:"var(--radius-lg)",
+        border:"1px solid var(--green-border)",background:"var(--green-bg)",
+        color:"var(--green)",fontSize:14,fontWeight:600,marginBottom:10
+      }},
+        h("i",{className:"ti ti-download","aria-hidden":"true",style:{fontSize:20}}),
+        "Exportar colección (.json)"
+      ),
+      // Import
+      h("button",{onClick:()=>fileRef.current.click(),className:"row-btn",style:{
+        display:"flex",alignItems:"center",gap:10,width:"100%",
+        padding:"13px 14px",borderRadius:"var(--radius-lg)",
+        border:"1px solid var(--amber-border)",background:"var(--amber-bg)",
+        color:"var(--amber)",fontSize:14,fontWeight:600,marginBottom:10
+      }},
+        h("i",{className:"ti ti-upload","aria-hidden":"true",style:{fontSize:20}}),
+        "Importar desde archivo"
+      ),
+      h("input",{ref:fileRef,type:"file",accept:".json",onChange:doImport,style:{display:"none"}}),
+      // Reset
+      h("button",{onClick:doReset,className:"row-btn",style:{
+        display:"flex",alignItems:"center",gap:10,width:"100%",
+        padding:"13px 14px",borderRadius:"var(--radius-lg)",
+        border:"1px solid var(--gray-border2)",background:"var(--gray-bg)",
+        color:"var(--text3)",fontSize:14,fontWeight:600
+      }},
+        h("i",{className:"ti ti-trash","aria-hidden":"true",style:{fontSize:20}}),
+        "Borrar todo y empezar de nuevo"
+      ),
+      msg&&h("div",{style:{marginTop:14,textAlign:"center",fontSize:13,color:"var(--text2)"}},msg)
+    )
+  );
+}
+
+// ── MAIN APP ──────────────────────────────────────────────────────────────────
+function App(){
+  const [col,setCol]=useState({});
+  const [view,setView]=useState(null);
+  const [tab,setTab]=useState("album");
+  const [showData,setShowData]=useState(false);
+  const [loaded,setLoaded]=useState(false);
+
+  useEffect(()=>{setCol(loadCol());setLoaded(true);},[]);
+
+  const updateCol=useCallback((fn)=>{
+    setCol(prev=>{const next=fn(prev);saveCol(next);return next;});
+  },[]);
+
+  const tap=useCallback((code)=>{
+    updateCol(p=>({...p,[code]:(p[code]||0)+1}));
+  },[updateCol]);
+
+  const reset=useCallback((code)=>{
+    updateCol(p=>({...p,[code]:0}));
+  },[updateCol]);
+
+  const importCol=useCallback((data)=>{
+    saveCol(data);setCol(data);
+  },[]);
+
+  if(!loaded)return h("div",{style:{display:"flex",height:"100vh",alignItems:"center",justifyContent:"center",color:"var(--text2)",fontSize:14}},"Cargando...");
+
+  const totalHave=Object.values(col).filter(v=>v>0).length;
+  const totalRepeats=Object.values(col).reduce((s,v)=>s+Math.max(0,v-1),0);
+  const pct=Math.round((totalHave/GRAND_TOTAL)*100);
+
+  // Section detail
+  if(view){
+    const section=SECTIONS.find(s=>s.id===view);
+    return h("div",null,
+      h(SectionView,{section,col,onTap:tap,onReset:reset,onBack:()=>setView(null)}),
+      showData&&h(DataModal,{col,onClose:()=>setShowData(false),onImport:importCol})
+    );
+  }
+
+  return h("div",{style:{fontFamily:"inherit",minHeight:"100vh",paddingBottom:20}},
+    // Header
+    h("div",{style:{
+      background:"var(--white)",borderBottom:"1px solid var(--gray-border)",
+      padding:"14px 14px 12px"
+    }},
+      h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}},
+        h("div",null,
+          h("div",{style:{fontSize:11,fontWeight:700,letterSpacing:1.5,color:"var(--text3)"}},
+            "ÁLBUM PANINI"
+          ),
+          h("div",{style:{fontSize:21,fontWeight:700,color:"var(--text)",marginTop:1}},
+            "FIFA World Cup 2026"
+          )
+        ),
+        h("button",{onClick:()=>setShowData(true),className:"row-btn",style:{
+          padding:"8px",borderRadius:"var(--radius)",
+          border:"1px solid var(--gray-border)",color:"var(--text2)"
+        }},
+          h("i",{className:"ti ti-database","aria-hidden":"true",style:{fontSize:20}})
+        )
+      ),
+      // Stats
+      h("div",{style:{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginTop:12}},
+        [{label:"Tengo",value:totalHave,color:"var(--green)"},
+         {label:"Me faltan",value:GRAND_TOTAL-totalHave,color:"var(--red)"},
+         {label:"Para cambio",value:totalRepeats,color:"var(--amber)"},
+        ].map(({label,value,color})=>
+          h("div",{key:label,style:{
+            background:"var(--gray-bg)",borderRadius:"var(--radius)",
+            padding:"8px 10px",textAlign:"center",border:"1px solid var(--gray-border)"
+          }},
+            h("div",{style:{fontSize:22,fontWeight:700,color}},value),
+            h("div",{style:{fontSize:11,color:"var(--text3)",marginTop:2}},label)
+          )
+        )
+      ),
+      // Global progress
+      h("div",{style:{marginTop:12}},
+        h("div",{style:{display:"flex",justifyContent:"space-between",fontSize:11,color:"var(--text3)",marginBottom:4}},
+          h("span",null,"Completado"),
+          h("span",{style:{fontWeight:700}},`${pct}% de ${GRAND_TOTAL} figus`)
+        ),
+        h(ProgressBar,{pct,done:pct===100})
+      )
+    ),
+    // Tabs
+    h("div",{style:{
+      display:"flex",borderBottom:"1px solid var(--gray-border)",
+      background:"var(--white)",position:"sticky",top:0,zIndex:9
+    }},
+      [["album","Álbum","ti-layout-grid"],["repetidas","Mis repetidas","ti-refresh"]].map(([t,lbl,icon])=>
+        h("button",{key:t,onClick:()=>setTab(t),style:{
+          flex:1,padding:"9px 8px",display:"flex",flexDirection:"column",
+          alignItems:"center",gap:2,background:"none",
+          border:"none",borderBottom:tab===t?"2px solid var(--green-mid)":"2px solid transparent",
+          color:tab===t?"var(--green)":"var(--text3)"
+        }},
+          h("i",{className:`ti ${icon}`,"aria-hidden":"true",style:{fontSize:17}}),
+          h("span",{style:{fontSize:11,fontWeight:tab===t?700:400}},lbl)
+        )
+      )
+    ),
+    // Album list
+    tab==="album"&&h("div",{style:{padding:"8px 10px",display:"flex",flexDirection:"column",gap:5}},
+      h("div",{style:{fontSize:11,color:"var(--text3)",padding:"4px 2px 4px",lineHeight:1.5}},
+        "Tocá una selección · Dentro: tocá la figu para marcarla (otra vez = repetida) · Mantené apretado para borrar"
+      ),
+      SECTIONS.map(sec=>{
+        const have=sec.stickers.filter(s=>col[s]>0).length;
+        const p=(have/sec.stickers.length)*100;
+        const done=have===sec.stickers.length;
+        return h("button",{key:sec.id,onClick:()=>setView(sec.id),className:"row-btn",style:{
+          display:"flex",alignItems:"center",gap:10,
+          background:"var(--white)",border:"1px solid var(--gray-border)",
+          borderRadius:"var(--radius-lg)",padding:"10px 12px",textAlign:"left",width:"100%"
+        }},
+          h("span",{style:{fontSize:20,minWidth:28,textAlign:"center"}},sec.flag),
+          h("div",{style:{flex:1,minWidth:0}},
+            h("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:5,alignItems:"center"}},
+              h("span",{style:{fontSize:13,fontWeight:600,color:"var(--text)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},sec.label),
+              h("span",{style:{fontSize:12,fontWeight:700,color:done?"var(--green)":"var(--text3)",flexShrink:0,marginLeft:6}},
+                `${have}/${sec.stickers.length}`
+              )
+            ),
+            h(ProgressBar,{pct:p,done})
+          ),
+          h("i",{className:"ti ti-chevron-right","aria-hidden":"true",style:{fontSize:15,color:"var(--text3)",flexShrink:0}})
+        );
+      })
+    ),
+    tab==="repetidas"&&h(RepeatedView,{col,onTap:tap,onReset:reset}),
+    showData&&h(DataModal,{col,onClose:()=>setShowData(false),onImport:importCol})
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(h(App,null));
+</script>
+</body>
+</html>
